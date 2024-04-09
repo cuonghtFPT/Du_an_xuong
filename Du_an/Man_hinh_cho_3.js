@@ -1,7 +1,14 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 
-const Man_hinh_cho_3 = () => {
+const Man_hinh_cho_3 = (props) => {
+   const {navigation} = props;
+   useEffect(() => {
+      const time = setTimeout(() => {
+         navigation.navigate('Login')
+      },3000)
+      return () => clearTimeout(time);
+   },[]);
   return (
     <View style={styles.container}>
       <View style={styles.container_view}>
@@ -13,7 +20,7 @@ const Man_hinh_cho_3 = () => {
          </View>
       </View>
       <Image style={{width:90,height:90,marginLeft:170}} source={require('./img/more_1.png')}/>
-      <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:50}}>
+      <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:20}}>
          <Pressable>
             <Text style={{fontSize:18,fontWeight:'bold',marginLeft:10}}>Skip</Text>
          </Pressable>

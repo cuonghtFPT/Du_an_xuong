@@ -1,7 +1,16 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Image, Pressable, StyleSheet, Text, View} from 'react-native'
+import React, { useEffect } from 'react'
+import Man_hinh_cho_2 from './Man_hinh_cho_2'; // Import màn hình Man_hinh_cho_2
 
-const Man_hinh_cho_1 = () => {
+
+const Man_hinh_cho_1 = (props) => {
+   const {navigation} = props;
+   useEffect(() => {
+      const time = setTimeout(() => {
+         navigation.navigate('Man_hinh_cho_2')
+      },3000)
+      return () => clearTimeout(time);
+   },[]);
   return (
     <View style={styles.container}>
       <View style={styles.container_view}>
@@ -10,11 +19,11 @@ const Man_hinh_cho_1 = () => {
          <View style={{flexDirection:'row'}}>
             <Image style={{width:35,height:35,marginLeft:70,marginTop:40}} source={require('./img/stars.png')}/>
             <Text style={{width:220,height:192,marginTop:40,marginLeft:20,fontWeight:'bold'}}>Chào mừng đến với TOC STUDIO
-nơi sống trọn từng khoảnh khắc</Text>
+   nơi sống trọn từng khoảnh khắc</Text>
          </View>
       </View>
       <Image style={{width:90,height:90,marginLeft:170}} source={require('./img/more_1.png')}/>
-      <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:50}}>
+      <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:20}}>
          <Pressable>
             <Text style={{fontSize:18,fontWeight:'bold',marginLeft:10}}>Skip</Text>
          </Pressable>
