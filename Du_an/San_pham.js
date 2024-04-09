@@ -1,8 +1,49 @@
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Screen } from 'react-native-screens'
+import { launchImageLibrary } from 'react-native-image-picker';
+
 
 const San_pham = () => {
+   const [sanpham, setSanpham] = useState([]);
+   const [images, setImages] = useState([]);
+
+   const commonOptions = {
+     mediaType: 'photo',
+     maxWidth: 500,
+     maxHeight: 500,
+   };
+ 
+   const libraryOptions = {
+     selectionLimit: 10,
+     ...commonOptions,
+   };
+ 
+   const onOpenLibrary = async () => {
+     const response = await launchImageLibrary(libraryOptions);
+     if (response?.assets) {
+       setImages(response.assets);
+       // Lưu đường dẫn của ảnh vào AsyncStorage hoặc Redux store
+       // Ví dụ AsyncStorage:
+       // await AsyncStorage.setItem('selectedImage', JSON.stringify(response.assets));
+     } else {
+       Alert.alert('Có lỗi xảy ra', response.errorMessage);
+     }
+   };
+ 
+
+  useEffect(() => {
+    const fetchSanpham = async () => {
+      try {
+        const response = await axios.get('http://192.168.0.104:3000/sanpham//get-list-sanphams');
+        setSanpham(response.data);
+      } catch (error) {
+        console.error('Error fetching albums:', error);
+      }
+    };
+
+    fetchSanpham();
+  }, []);
   return (
     <ScrollView>
       <View>
@@ -30,9 +71,9 @@ const San_pham = () => {
          <Text style={{textAlign:'center',marginTop:5,fontWeight:'bold',color:'#FFFFFF'}}>Đặt hàng</Text>
       </Pressable>
 
-      <View style={{backgroundColor:'#e7e7e7',width:271,height:176,marginLeft:70,marginTop:60}}>
+      <Pressable onPress={onOpenLibrary} style={{backgroundColor:'#e7e7e7',width:271,height:176,marginLeft:70,marginTop:60}}>
          <Image style={{width:80,height:71.25,marginLeft:100,marginTop:50}} source={require('./img/add-image.png')}/>
-      </View>
+      </Pressable>
 
       <Text style={{fontSize:15,fontWeight:'bold',marginLeft:90,marginTop:20}}>Đăng ký liền tay-Nhận ngay ưu đãi</Text>
 

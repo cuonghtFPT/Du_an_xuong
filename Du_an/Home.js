@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   DrawerLayoutAndroid,
   Image,
@@ -11,11 +11,48 @@ import {
   FlatList,
   Pressable,
 } from 'react-native';
+import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import COMMON from '../COMMON';
 
-const Home = () => {
+const Home = (props) => {
   const drawer = useRef(null);
   const navigation = useNavigation();
+  const [homeData, setHomeData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  // const { navigation } = props;
+  const man1=()=>{
+    navigation.navigate('Chitiet_dichvu');
+  }
+  const man2=()=>{
+    navigation.navigate('Home');
+  }
+  const man3=()=>{
+    navigation.navigate('Album');
+  }
+  const man4=()=>{
+    navigation.navigate('Chitiet_dichvu');
+  }
+
+  const man5=()=>{
+    navigation.navigate('libary');
+  }
+
+  const man6=()=>{
+    navigation.navigate('San_pham');
+  }
+  useEffect(() => {
+    fetchHomeData();
+  }, []);
+
+  const fetchHomeData = async () => {
+    try {
+      const response = await axios.get('http://10.24.30.234:3000/home/get-list-Homes');
+      setHomeData(response.data);
+    } catch (error) {
+      console.error('Error fetching home data:', error);
+    }
+  };
 
   const openDrawer = () => {
     drawer.current?.openDrawer();
@@ -25,25 +62,10 @@ const Home = () => {
     drawer.current?.closeDrawer();
   };
 
-  const navigateToHomeScreen = () => {
-    navigation.navigate('them_sp');
-    closeDrawer(); // Close the drawer after navigating
-  };
-
-  const navigateToHomeScreen1 = () => {
-    navigation.navigate('thong_tin');
-    closeDrawer(); // Close the drawer after navigating
-  };
-
-  const productData = [
-    { id: '1', img: require('./img/anh_cuoi3.jpg'), name: 'Phong cảnh cưới phù tuyệt đẹp cho bức ảnh', img1: require('./img/man.png'), content: 'TOC STUDIO', date: 'Jan 3,2023 * 3344 view' },
-    { id: '2', img: require('./img/anh_cuoi3.jpg'), name: 'Phong cảnh cưới phù tuyệt đẹp cho bức ảnh', img1: require('./img/man.png'), content: 'TOC STUDIO', date: 'Jan 3,2023 * 3344 view' },
-    { id: '3', img: require('./img/anh_cuoi3.jpg'), name: 'Phong cảnh cưới phù tuyệt đẹp cho bức ảnh', img1: require('./img/man.png'), content: 'TOC STUDIO', date: 'Jan 3,2023 * 3344 view' },
-    { id: '4', img: require('./img/anh_cuoi3.jpg'), name: 'Phong cảnh cưới phù tuyệt đẹp cho bức ảnh', img1: require('./img/man.png'), content: 'TOC STUDIO', date: 'Jan 3,2023 * 3344 view' },
-
-    // Add more data items as needed
-  ];
-
+  // Function to filter homeData based on searchTerm
+  const filteredHomeData = homeData.filter(item =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <DrawerLayoutAndroid
@@ -51,8 +73,37 @@ const Home = () => {
       drawerWidth={300}
       drawerPosition="left"
       renderNavigationView={() => (
-        <ScrollView>
+        <ScrollView style={{backgroundColor:'#f3d9dc',flex:1}}>
           {/* Navigation content */}
+          <View>
+            <Pressable onPress={man2}>
+              <Text style={{textAlign:'center',fontSize:20,fontWeight:'bold',marginTop:10,color:'white'}}>Home</Text>
+            </Pressable>
+            <View style={{ height: 1, width: '100%', backgroundColor: 'white', marginTop: 15 }}>
+        </View>
+            <Pressable onPress={man3}>
+              <Text style={{textAlign:'center',fontSize:20,fontWeight:'bold',marginTop:10,color:'white'}}>Album</Text>
+            </Pressable>
+            <View style={{ height: 1, width: '100%', backgroundColor: 'white', marginTop: 15 }}>
+        </View>
+            <Pressable onPress={man1}>
+              <Text style={{textAlign:'center',fontSize:20,fontWeight:'bold',marginTop:10,color:'white'}}>Chi tiết dịch vụ</Text>
+            </Pressable>
+            <View style={{ height: 1, width: '100%', backgroundColor: 'white', marginTop: 15 }}>
+        </View>
+
+            <Pressable onPress={man5}>
+              <Text style={{textAlign:'center',fontSize:20,fontWeight:'bold',marginTop:10,color:'white'}}>Libary</Text>
+            </Pressable>
+            <View style={{ height: 1, width: '100%', backgroundColor: 'white', marginTop: 15 }}>
+        </View>
+
+            <Pressable onPress={man6}>
+              <Text style={{textAlign:'center',fontSize:20,fontWeight:'bold',marginTop:10,color:'white'}}>Sản phẩm</Text>
+            </Pressable>
+            <View style={{ height: 1, width: '100%', backgroundColor: 'white', marginTop: 15 }}>
+        </View>
+          </View>
         </ScrollView>
       )}
     >
@@ -65,56 +116,56 @@ const Home = () => {
         </View>
 
         <View>
-          <TextInput placeholder='Search......' style={styles.textInput} />
+          {/* TextInput for search */}
+          <TextInput 
+            placeholder='Search......' 
+            style={styles.textInput} 
+            onChangeText={text => setSearchTerm(text)} // Update searchTerm when text changes
+          />
         </View>
 
         <Text style={{ fontSize: 25, marginTop: 10 }}>Phong cảnh</Text>
 
         <FlatList
           horizontal
-          data={productData}
-          keyExtractor={(item) => item.id}
+          data={filteredHomeData} // Use filteredHomeData instead of homeData
+          keyExtractor={(item, index) => index.toString()} // Use index as key if id is undefined
           renderItem={({ item }) => (
             <View style={styles.productItem}>
-              <Image source={item.img} style={styles.productImage} />
+              <Image source={{ uri: item.img }} style={styles.productImage} />
               <Text style={styles.productName}>{item.name}</Text>
-              <View style={{flexDirection:'row'}}>
-                <Image style={{width:20,height:20,marginTop:2,marginRight:10}} source={item.img1}/>
-              <Text style={styles.productContent}>{item.content}</Text>
-              <Text style={styles.productContent1}>{item.date}</Text>
-              </View>
             </View>
           )}
         />
-        <View style={{height:1,width:'100%',backgroundColor:'black',marginTop:15}}>
+        <View style={{ height: 1, width: '100%', backgroundColor: 'black', marginTop: 15 }}>
         </View>
 
-        <View style={{marginTop:10,flexDirection:'row',justifyContent:'space-between'}}>
-          <Pressable style={{width:70,height:26,borderWidth:1,backgroundColor:'#F9B1B9'}}>
-            <Text style={{textAlign:'center',lineHeight:26,fontWeight:'bold'}}>Tất cả</Text>
+        <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Pressable style={{ width: 70, height: 26, borderWidth: 1, backgroundColor: '#F9B1B9' }}>
+            <Text style={{ textAlign: 'center', lineHeight: 26, fontWeight: 'bold' }}>Tất cả</Text>
           </Pressable>
 
-          <Pressable style={{width:70,height:26,borderWidth:1}}>
-            <Text style={{textAlign:'center',lineHeight:26,fontWeight:'bold'}}>Giá cưới </Text>
+          <Pressable style={{ width: 70, height: 26, borderWidth: 1 }}>
+            <Text style={{ textAlign: 'center', lineHeight: 26, fontWeight: 'bold' }}>Giá cưới </Text>
           </Pressable>
 
-          <Pressable style={{width:70,height:26,borderWidth:1}}>
-            <Text style={{textAlign:'center',lineHeight:26,fontWeight:'bold'}}>Váy cưới</Text>
+          <Pressable style={{ width: 70, height: 26, borderWidth: 1 }}>
+            <Text style={{ textAlign: 'center', lineHeight: 26, fontWeight: 'bold' }}>Váy cưới</Text>
           </Pressable>
 
-          <Pressable style={{width:70,height:26,borderWidth:1}}>
-            <Text style={{textAlign:'center',lineHeight:26,fontWeight:'bold'}}>Tư vấn</Text>
+          <Pressable style={{ width: 70, height: 26, borderWidth: 1 }}>
+            <Text style={{ textAlign: 'center', lineHeight: 26, fontWeight: 'bold' }}>Tư vấn</Text>
           </Pressable>
         </View>
       </View>
 
       <ScrollView>
-      <FlatList
-          data={productData}
-          keyExtractor={(item) => item.id}
+        <FlatList
+          data={filteredHomeData} // Use filteredHomeData instead of homeData
+          keyExtractor={(item, index) => index.toString()} // Use index as key if id is undefined
           renderItem={({ item }) => (
             <View style={styles.productItem1}>
-              <Image source={item.img} style={styles.productImage1} />
+              <Image source={{ uri: item.img }} style={styles.productImage1} />
               <Text style={styles.productName}>{item.name}</Text>
             </View>
           )}
@@ -162,9 +213,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     borderWidth: 1,
-    borderRadius:20,
-    paddingLeft:10,
-    paddingRight:10
+    borderRadius: 20,
+    paddingLeft: 10,
+    paddingRight: 10
   },
   productItem1: {
     flexDirection: 'row',
@@ -173,39 +224,30 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     borderWidth: 1,
-    borderRadius:20,
-    paddingLeft:10,
-    paddingRight:10
+    borderRadius: 20,
+    paddingLeft: 10,
+    paddingRight: 10
   },
   productImage: {
     width: 250,
     height: 150,
     borderRadius: 10,
-    marginTop:10
+    marginTop: 10
   },
   productImage1: {
     width: 100,
     height: 100,
     borderRadius: 10,
-    marginTop:10,
-    marginBottom:10,
-    marginRight:30
+    marginTop: 10,
+    marginBottom: 10,
+    marginRight: 30
   },
   productName: {
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 5,
-    width:200,
-    textAlign:'center'
-  },
-  productContent: {
-    fontSize: 12,
-    marginTop: 5,
-  },
-  productContent1: {
-    fontSize: 12,
-    marginTop: 5,
-    marginLeft:20
+    width: 200,
+    textAlign: 'center'
   },
 });
 
